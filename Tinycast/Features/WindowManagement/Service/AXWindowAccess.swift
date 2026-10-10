@@ -27,7 +27,8 @@ enum AXWindowAccess {
         for attribute in [kAXFocusedWindowAttribute, kAXMainWindowAttribute] {
             if let window = element(application, attribute), isEligible(window) { return window }
         }
-        return windows(in: application).first(where: isEligible)
+        // Sonoma port: a method reference loses its isolation under Swift 6.0.
+        return windows(in: application).first(where: { isEligible($0) })
     }
 
     /// Every window the app reports, unfiltered and in its own order.

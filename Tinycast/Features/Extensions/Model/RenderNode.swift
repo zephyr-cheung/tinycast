@@ -92,7 +92,7 @@ enum RenderValue: Sendable, Equatable {
 
     /// How host-call arguments cross from the JS queue to the main actor as `Sendable`.
     static func arguments(from json: String) -> [RenderValue] {
-        ExtensionRuntime.jsonArray(from: json).map(RenderValue.init(json:))
+        ExtensionRuntime.jsonArray(from: json).map { RenderValue(json: $0) }
     }
 
     init(json: Any) {
@@ -107,7 +107,7 @@ enum RenderValue: Sendable, Equatable {
                 self = .number(value.doubleValue)
             }
         case let value as [Any]:
-            self = .array(value.map(RenderValue.init(json:)))
+            self = .array(value.map { RenderValue(json: $0) })
         case let value as [String: Any]:
             if let handler = value["$fn"] as? String {
                 self = .handler(handler)
@@ -168,7 +168,7 @@ struct RenderNode: Sendable, Equatable, Identifiable {
         self.init(
             id: id, type: type,
             props: rawProps.mapValues(RenderValue.init(json:)),
-            children: rawChildren.compactMap { ($0 as? [String: Any]).flatMap(RenderNode.init(json:)) })
+            children: rawChildren.compactMap { ($0 as? [String: Any]).flatMap { RenderNode(json: $0) } })
     }
 
     // MARK: - Prop access
@@ -216,7 +216,7 @@ struct RenderTree: Sendable, Equatable {
             let root = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
             let children = root["children"] as? [Any]
         else { return nil }
-        let nodes = children.compactMap { ($0 as? [String: Any]).flatMap(RenderNode.init(json:)) }
+        let nodes = children.compactMap { ($0 as? [String: Any]).flatMap { RenderNode(json: $0) } }
         // A no-view command renders nothing; a view command wraps every screen in `__screen`.
         screens = nodes.filter { $0.type == "__screen" }
     }

@@ -1,4 +1,3 @@
-import FoundationModels
 import Foundation
 
 @MainActor
@@ -18,21 +17,21 @@ enum AIProviderFactory {
             installedAI: installedAI, keyStore: keyStore)
     }
 
-    /// `guardrails` reaches only the on-device model, the one route that filters locally.
     static func make(
         selection: AIModelSelection,
         settings: AISettingsStore,
         subscription: ChatGPTSubscriptionManager,
         installedAI: InstalledAIManager,
-        keyStore: KeychainSecretStore = .aiAPIKeys,
-        guardrails: SystemLanguageModel.Guardrails = .default
+        keyStore: KeychainSecretStore = .aiAPIKeys
     ) throws -> any AIProvider {
         switch selection {
         case .appleIntelligence:
-            if let message = AppleIntelligenceProvider.status().message {
-                throw AIProviderError.unavailable(message)
-            }
-            return AppleIntelligenceProvider(guardrails: guardrails)
+            // Sonoma port: the on-device route needs `FoundationModels` (macOS 26), which this
+            // branch cannot link at all. `AppleIntelligenceProvider.status()` always reports the
+            // device as unsupported here, and its message is what the user is shown.
+            throw AIProviderError.unavailable(
+                AppleIntelligenceProvider.status().message
+                    ?? "Apple Intelligence requires macOS 26.")
         case .codex(let model, let effort):
             guard settings.enabledInstalledProviders.contains(.codex) else {
                 throw AIProviderError.unavailable("Codex is disabled in AI Settings.")

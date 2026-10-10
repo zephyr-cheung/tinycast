@@ -71,7 +71,7 @@ enum SettingsSearchCatalog {
                 guard let score = score(query, item.element) else { return nil }
                 return (item.element, score, item.offset)
             }
-            .sorted { $0.score != $1.score ? $0.score > $1.score : $0.rank < $1.rank }
+            .sorted(by: { $0.score != $1.score ? $0.score > $1.score : $0.rank < $1.rank })
             .prefix(limit)
             .map(\.entry)
     }

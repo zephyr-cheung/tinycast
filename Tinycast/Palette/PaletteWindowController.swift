@@ -87,8 +87,11 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
     }
 
     // Isolated so teardown may touch the main-actor monitor; the block is already weak.
-    isolated deinit {
-        if let pasteMonitor { NSEvent.removeMonitor(pasteMonitor) }
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            if let pasteMonitor { NSEvent.removeMonitor(pasteMonitor) }
+        }
     }
 
     /// The character a bare-⌘ chord names, through the ASCII layout so an IME cannot move it.
@@ -378,7 +381,7 @@ final class PaletteWindowController: NSObject, NSWindowDelegate {
     /// Cached until hide, so both placements read one `visibleFrame`; a drag outranks the setting.
     private func resolveAnchor() -> CGPoint? {
         if let anchor { return anchor }
-        let resolved = restoredAnchor() ?? targetScreen().map(defaultAnchor(on:))
+        let resolved = restoredAnchor() ?? targetScreen().map { defaultAnchor(on: $0) }
         anchor = resolved
         return resolved
     }

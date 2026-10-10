@@ -201,7 +201,7 @@ final class AppCore {
             repository: NotesRepository(
                 applicationSupportDirectory: AppPaths.applicationSupport()),
             loadSelection: {
-                UserDefaults.standard.string(forKey: noteSelectionKey).map(NoteID.init(rawValue:))
+                UserDefaults.standard.string(forKey: noteSelectionKey).map { NoteID(rawValue: $0) }
             },
             saveSelection: { UserDefaults.standard.set($0?.rawValue, forKey: noteSelectionKey) })
     }
@@ -445,7 +445,8 @@ final class AppCore {
             settings: aiSettings, subscription: chatGPTSubscription, installedAI: installedAI)
     }
 
-    /// Permissive guardrails: the text transformed is the reader's own, which `.default` refuses.
+    /// Sonoma port: the permissive `guardrails` argument only ever reached the on-device model,
+    /// which this branch stubs out (see `AppleIntelligenceProvider`).
     func quickActionProvider() throws -> any AIProvider {
         quickActionSettings.repairModel(
             against: aiSettings.connections, fallback: aiSettings.defaultModel)
@@ -454,8 +455,7 @@ final class AppCore {
         }
         return try AIProviderFactory.make(
             selection: selection, settings: aiSettings, subscription: chatGPTSubscription,
-            installedAI: installedAI,
-            guardrails: .permissiveContentTransformations)
+            installedAI: installedAI)
     }
 
     // MARK: - Feature switches

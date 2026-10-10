@@ -33,8 +33,11 @@ final class MeetingClock {
         tick = nil
     }
 
-    isolated deinit {
-        tick?.cancel()
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            tick?.cancel()
+        }
     }
 
     /// The reference date is itself a minute boundary, so the remainder is the offset into one.

@@ -18,7 +18,7 @@ enum CalcTimestamp {
             let match = isoPattern?.firstMatch(in: text, range: NSRange(location: 0, length: source.length)),
             match.range.length == source.length
         else { return nil }
-        let parts = (1...6).compactMap { Int(source.substring(with: match.range(at: $0))) }
+        let parts = (1...6).compactMap({ Int(source.substring(with: match.range(at: $0))) })
         guard parts.count == 6, (1...9999).contains(parts[0]), (0...23).contains(parts[3]),
             (0...59).contains(parts[4]), (0...59).contains(parts[5])
         else { return nil }

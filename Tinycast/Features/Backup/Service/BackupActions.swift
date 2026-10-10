@@ -194,7 +194,8 @@ enum BackupActions {
     /// Quit any running Raycast so its hotkeys stop clashing; background helpers stay.
     static func quitRaycast() {
         for app in NSWorkspace.shared.runningApplications
-        where app.bundleIdentifier.map(isRaycastBundleID) == true
+        // Sonoma port: a method reference loses its `@MainActor` isolation under Swift 6.0.
+        where app.bundleIdentifier.map { isRaycastBundleID($0) } == true
             && app.activationPolicy != .prohibited
         {
             app.terminate()

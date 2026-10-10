@@ -27,8 +27,11 @@ final class ClipboardTextIndexer {
         self.extract = extract
     }
 
-    isolated deinit {
-        task?.cancel()
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            task?.cancel()
+        }
     }
 
     static var isSystemIdle: Bool {

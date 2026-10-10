@@ -119,7 +119,8 @@ final class NotesWindowController: NSObject, NSWindowDelegate {
     /// Idempotent, because AppKit re-seats the lights on a resize and on every title assignment.
     private func seatTrafficLights(in window: NSWindow) {
         let buttons = [NSWindow.ButtonType.closeButton, .miniaturizeButton, .zoomButton]
-            .compactMap(window.standardWindowButton)
+            // Sonoma port: a method reference loses its isolation under Swift 6.0.
+            .compactMap { window.standardWindowButton($0) }
         guard let leading = buttons.first, let band = leading.superview?.bounds.height else {
             return
         }

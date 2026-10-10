@@ -33,7 +33,7 @@ enum ScriptRomanization {
         guard let script = script(of: name) else { return [] }
         let readings: [String] =
             switch script {
-            case .han: [transform(name, .mandarinToLatin)].compactMap { $0 }
+            case .han: [transform(name, .mandarinToLatin)].compactMap({ $0 })
             // Only the kana romanize: ICU would read the kanji as Mandarin, which is a wrong word.
             case .japanese: [transform(dropping(name, in: hanRanges), .toLatin)].compactMap { $0 }
             case .hangul: hangulReadings(of: name)

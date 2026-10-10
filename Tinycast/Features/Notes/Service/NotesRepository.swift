@@ -211,7 +211,7 @@ struct NotesRepository: Sendable {
             let candidate = uniqueCandidate(base: base, suffix: suffix)
             let name = folded(candidate.lastPathComponent)
             // A case-only rename collides with its own file, which the move then replaces in place.
-            let isSelf = id.map { name == folded($0.rawValue) } ?? false
+            let isSelf = id.map({ name == folded($0.rawValue) }) ?? false
             guard !occupied.contains(name),
                 isSelf || !FileManager.default.fileExists(atPath: candidate.path)
             else {

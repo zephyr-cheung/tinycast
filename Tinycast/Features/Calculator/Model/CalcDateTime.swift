@@ -120,7 +120,7 @@ enum CalcDateTime {
         let atoms = atomize(query)
         guard atoms.count == 2 || atoms.count == 3 else { return atoms.count == 1 && isDottedDate(atoms) }
         let months = atoms.filter { monthByName[$0] != nil }.count
-        let days = atoms.filter { ordinalDay($0) != nil }.count
+        let days = atoms.filter({ ordinalDay($0) != nil }).count
         return months == 1 && days == atoms.count - 1
     }
 

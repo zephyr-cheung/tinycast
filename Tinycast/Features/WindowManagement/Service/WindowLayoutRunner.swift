@@ -71,7 +71,7 @@ enum WindowLayoutRunner {
         _ plan: WindowLayoutPlan, snapshot: WindowInventory.Snapshot,
         claimed: inout [String: [AXUIElement]], outcome: inout Outcome
     ) {
-        let existing = plan.placements.filter { $0.source != .launch }
+        let existing = plan.placements.filter({ $0.source != .launch })
         for (_, group) in Dictionary(grouping: existing, by: \.bundleID) {
             guard case .existing(let first) = group[0].source,
                 let application = snapshot.elements[first]?.application

@@ -75,8 +75,11 @@ final class ChatHistoryStore {
         databaseURL = directory.appendingPathComponent("ai-chats.sqlite3")
     }
 
-    isolated deinit {
-        sqlite3_close(database)
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            sqlite3_close(database)
+        }
     }
 
     func load() {

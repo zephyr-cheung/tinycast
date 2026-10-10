@@ -3,7 +3,7 @@ import ImageIO
 import PDFKit
 import Vision
 
-nonisolated enum ClipboardTextExtractor {
+enum ClipboardTextExtractor {
     static let maximumTextBytes = 32_000
     private static let maximumFileBytes = 32_000_000
     private static let maximumPages = 64
@@ -63,13 +63,22 @@ nonisolated enum ClipboardTextExtractor {
 
     private static func recognizeTile(_ image: CGImage) async throws -> String {
         try Task.checkCancellation()
-        var request = RecognizeTextRequest()
+        // Sonoma port: Vision's `RecognizeTextRequest` / `perform(on:)` are macOS 15+, and this
+        // helper tool has to run on 14. The older `VNRecognizeTextRequest` pair below is the same
+        // recognition engine behind a pre-15 API, so the behaviour is unchanged. It is synchronous,
+        // which is fine here: the helper runs one request in its own process and exits.
+        let request = VNRecognizeTextRequest()
         request.recognitionLevel = .accurate
-        request.minimumTextHeightFraction = 0
+        // `minimumTextHeightFraction` is the new API's spelling; the pre-15 request calls it
+        // `minimumTextHeight` (0 = accept any height, same as before).
+        request.minimumTextHeight = 0
         request.automaticallyDetectsLanguage = true
-        let observations = try await request.perform(on: image)
+        let handler = VNImageRequestHandler(cgImage: image, options: [:])
+        try handler.perform([request])
         try Task.checkCancellation()
-        return observations.compactMap { $0.topCandidates(1).first?.string }.joined(separator: "\n")
+        return (request.results ?? [])
+            .compactMap { $0.topCandidates(1).first?.string }
+            .joined(separator: "\n")
     }
 
     private static func extractPDF(_ url: URL) async throws -> String {

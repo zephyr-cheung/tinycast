@@ -15,7 +15,7 @@ struct LauncherItemsSection: View {
         guard !query.isEmpty else { return scoped }
         // Membership only: score order would move the row being edited out from under the caret.
         let matched = Set(appIndex.matches(query).map(\.id))
-        return scoped.filter { matched.contains($0.id) }
+        return scoped.filter({ matched.contains($0.id) })
     }
 
     var body: some View {

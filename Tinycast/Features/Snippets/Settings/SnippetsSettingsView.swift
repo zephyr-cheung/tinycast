@@ -213,7 +213,6 @@ private struct SnippetEditorSheet: View {
     @State private var name: String
     @State private var keyword: String
     @State private var text: String
-    @State private var selection: TextSelection?
     @State private var isEnabled: Bool
     @State private var showsConfirmation: Bool
     @State private var errorMessage: String?
@@ -281,7 +280,8 @@ private struct SnippetEditorSheet: View {
                 Spacer()
                 placeholderMenu
             }
-            TextEditor(text: $text, selection: $selection)
+            // Sonoma port: `TextSelection` is macOS 15+, so 14 gets the plain editor.
+            TextEditor(text: $text)
                 .font(.body.monospaced())
                 .scrollContentBackground(.hidden)
                 .padding(Theme.Spacing.sm)
@@ -331,17 +331,10 @@ private struct SnippetEditorSheet: View {
         Button(token) { insert(token) }
     }
 
-    /// Replaces the selection or lands at the caret; appends when there is no usable one.
+    /// Sonoma port: the caret-aware branch needs `TextSelection` (macOS 15+), so this falls back to
+    /// the behaviour the original documented for "no usable selection" — append at the end.
     private func insert(_ token: String) {
-        if let selection, case .selection(let range) = selection.indices,
-            range.lowerBound >= text.startIndex, range.upperBound <= text.endIndex
-        {
-            text.replaceSubrange(range, with: token)
-        } else {
-            text += token
-        }
-        // Those indices belong to the replaced string, so they must not survive the next insert.
-        selection = nil
+        text += token
         isTemplateFocused = true
     }
 

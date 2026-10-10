@@ -76,7 +76,7 @@ struct AIScreen: PaletteScreen {
         guard !attachments.isEmpty || addressed != nil else { return nil }
         let width =
             PendingAttachmentsChips.width(for: attachments, metrics)
-            + (addressed.map { ComposerChip.width(of: "@\($0.slug)", metrics) } ?? 0)
+            + (addressed.map({ ComposerChip.width(of: "@\($0.slug)", metrics) }) ?? 0)
         return PaletteHeaderAccessory(
             width: width + metrics.size.menuWidth,
             fieldNames: [], firstIncompleteField: nil,
@@ -289,7 +289,7 @@ private struct ComposerThumbnail: View {
         }
         .frame(width: metrics.size.chatAttachmentThumb, height: metrics.size.chatAttachmentThumb)
         .clipShape(RoundedRectangle(cornerRadius: metrics.radius.thumbnail, style: .continuous))
-        .task(id: id) { image = data.flatMap(NSImage.init(data:)) }
+        .task(id: id) { image = data.flatMap { NSImage(data: $0) } }
     }
 }
 

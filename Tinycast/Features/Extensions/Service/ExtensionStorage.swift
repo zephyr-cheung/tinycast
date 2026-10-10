@@ -187,7 +187,7 @@ final class ExtensionStorage {
         if let existing = stores[name] { return existing }
         let loaded =
             (try? Data(contentsOf: fileURL(for: name)))
-            .flatMap { try? JSONDecoder().decode(Store.self, from: $0) } ?? Store()
+            .flatMap({ try? JSONDecoder().decode(Store.self, from: $0) }) ?? Store()
         stores[name] = loaded
         return loaded
     }

@@ -171,7 +171,7 @@ extension SettingsBackup {
         hotkeys.togglePalette = hk.binding(for: .togglePalette)
         hotkeys.commands = Dictionary(
             uniqueKeysWithValues: CommandID.allCases.compactMap { id in
-                id.hotKeyAction.flatMap(hk.binding(for:)).map { (id.rawValue, $0) }
+                id.hotKeyAction.flatMap { hk.binding(for: $0) }.map { (id.rawValue, $0) }
             })
         hotkeys.apps = Dictionary(
             uniqueKeysWithValues: hk.boundBundleIDs.compactMap { id in

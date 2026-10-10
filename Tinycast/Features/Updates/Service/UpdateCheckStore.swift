@@ -97,7 +97,7 @@ final class UpdateCheckStore {
     /// One turn of the pump: check if due, offer what is pending, and answer how long to wait.
     private func advance() async -> TimeInterval {
         // Clamped, so a future-stamped check can't park the loop past one interval.
-        let age = max(0, lastCheckedAt.map { Date().timeIntervalSince($0) } ?? .infinity)
+        let age = max(0, lastCheckedAt.map({ Date().timeIntervalSince($0) }) ?? .infinity)
         var wait = Self.refreshInterval - age
         if wait <= 0 {
             wait = await check() ? Self.refreshInterval : Self.retryInterval

@@ -33,11 +33,14 @@ final class SnippetsStore {
         snippetsDirectory = repository.snippetsDirectory
     }
 
-    isolated deinit {
-        reloadTask?.cancel()
-        watcherRetryTask?.cancel()
-        directoryWatcher?.cancel()
-        for source in fileWatchers.values { source.cancel() }
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            reloadTask?.cancel()
+            watcherRetryTask?.cancel()
+            directoryWatcher?.cancel()
+            for source in fileWatchers.values { source.cancel() }
+        }
     }
 
     func start() async {
@@ -186,7 +189,8 @@ final class SnippetsStore {
     private func publishLocal(records: [StoredSnippet]) {
         apply(
             SnippetRepository.Snapshot(
-                records: records.sorted(by: recordOrder),
+                // Sonoma port: `recordOrder` as a value loses its isolation under Swift 6.0.
+                records: records.sorted { recordOrder($0, $1) },
                 issues: issues))
     }
 

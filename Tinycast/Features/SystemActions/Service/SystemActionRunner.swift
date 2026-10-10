@@ -497,7 +497,7 @@ enum SystemActionRunner {
         guard depth < 20 else { return [] }
         let subrole = axString(element, attribute: kAXSubroleAttribute as CFString)?.lowercased()
         if let subrole, subrole.contains("notificationcenter") { return [element] }
-        return axChildren(element).flatMap { notificationElements(in: $0, depth: depth + 1) }
+        return axChildren(element).flatMap({ notificationElements(in: $0, depth: depth + 1) })
     }
 
     /// The close control; never an arbitrary button, a notification's own rows press too.

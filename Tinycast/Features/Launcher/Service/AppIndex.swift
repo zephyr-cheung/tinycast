@@ -160,7 +160,7 @@ struct AppEntry: Identifiable, Hashable, Sendable {
             if let command = CommandCatalog.command(for: self) { return command.hotKeyAction }
             return CustomQuickAction.id(fromEntryID: id).map { .quickAction(id: $0) }
         case .application:
-            return bundleID.map { .app(bundleID: $0) }
+            return bundleID.map({ .app(bundleID: $0) })
         case .systemSettings:
             return bundleID.map { .settingsPane(bundleID: $0) }
         case .customCommand:
@@ -586,7 +586,8 @@ final class AppIndex {
             favoritesRevision: favorites.revision)
         return resultsMemo.value(for: key) {
             // Filtering stays downstream of `matches` so that memo is never keyed on hidden state.
-            let base = matches(q).filter(visibility.isVisible)
+            // Sonoma port: a method reference loses its isolation under Swift 6.0.
+            let base = matches(q).filter { visibility.isVisible($0) }
             guard q.isEmpty, !favorites.keys.isEmpty else { return base }
             let split = favorites.ordered(base)
             return split.favorites + split.rest

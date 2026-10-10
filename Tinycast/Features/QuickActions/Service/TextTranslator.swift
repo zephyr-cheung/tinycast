@@ -9,6 +9,8 @@ enum TextTranslator {
         case unsupported
         case notInstalled(language: String)
         case failed
+        /// Sonoma port: everything below `translate` needs macOS 15's Translation framework.
+        case needsNewerMacOS
 
         var errorDescription: String? {
             switch self {
@@ -20,6 +22,8 @@ enum TextTranslator {
                 return "\(language) needs to be downloaded before it can be used."
             case .failed:
                 return "The text could not be translated."
+            case .needsNewerMacOS:
+                return "Translating isn't available in this build."
             }
         }
     }
@@ -38,22 +42,12 @@ enum TextTranslator {
     static func translate(_ text: String, to target: Locale.Language) async throws -> String {
         guard let source = sourceLanguage(of: text) else { throw Failure.undetectableSource }
         guard !source.isEquivalent(to: target) else { return text }
-        switch await LanguageAvailability().status(from: source, to: target) {
-        case .installed:
-            break
-        case .supported:
-            throw Failure.notInstalled(language: displayName(of: target))
-        case .unsupported:
-            throw Failure.unsupported
-        @unknown default:
-            throw Failure.unsupported
-        }
-        do {
-            let session = TranslationSession(installedSource: source, target: target)
-            return try await session.translate(text).targetText
-        } catch {
-            throw Failure.failed
-        }
+        // Sonoma port: Apple's translator cannot be built on this branch at all — the
+        // `TranslationSession(installedSource:target:)` initialiser the flow needs does not exist in
+        // the macOS 15.2 SDK (it is 26-era), and `LanguageAvailability` is 15+ besides. So the whole
+        // path collapses into one honest answer instead of several partial ones.
+        _ = source
+        throw Failure.needsNewerMacOS
     }
 
     /// Minimal, not maximal: the maximal form would spell `es` "Spanish (Latin, Spain)" in a menu.
@@ -64,7 +58,9 @@ enum TextTranslator {
 
     /// The framework's own list, so the picker cannot offer a pair that only fails at press time.
     static func supportedLanguages() async -> [Locale.Language] {
-        await LanguageAvailability().supportedLanguages
+        // Sonoma port: `LanguageAvailability` is macOS 15+; 14 offers no pairs to pick from.
+        guard #available(macOS 15.0, *) else { return [] }
+        return await LanguageAvailability().supportedLanguages
             .sorted { displayName(of: $0) < displayName(of: $1) }
     }
 }

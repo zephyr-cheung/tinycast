@@ -1,9 +1,10 @@
+@preconcurrency import Darwin
 import AppKit
 import Carbon.HIToolbox
 @preconcurrency import IOKit.hidsystem
 
 // Snapshot the mutable C global `mach_task_self_`, so actor code never reads it raw.
-private let machTaskSelf = mach_task_self_
+private nonisolated(unsafe) let machTaskSelf = mach_task_self_
 
 /// C entry point: decode, cross in for a Sendable `Decision`, then apply it out here.
 private func hyperKeyEventTapCallback(
@@ -135,8 +136,12 @@ final class HyperKeyTap: HealthCheckable {
     private static let quickPressWindow: Duration = .milliseconds(250)
 
     // Isolated so teardown can release the main-actor IOKit connection.
-    isolated deinit {
-        if hidConnect != IO_OBJECT_NULL { IOServiceClose(hidConnect) }
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; Xcode 16.2's Swift 6.0 has no such
+    // spelling, so the deinit hops onto the main actor explicitly.
+    deinit {
+        MainActor.assumeIsolated {
+            if hidConnect != IO_OBJECT_NULL { IOServiceClose(hidConnect) }
+        }
     }
 
     func start(settings: AppSettings) {

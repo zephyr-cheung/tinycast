@@ -27,7 +27,7 @@ final class FavoritesStore {
 
     func remove(keys removedKeys: Set<String>) {
         guard !removedKeys.isEmpty else { return }
-        let updated = keys.filter { !removedKeys.contains($0) }
+        let updated = keys.filter({ !removedKeys.contains($0) })
         guard updated != keys else { return }
         keys = updated
         commit()

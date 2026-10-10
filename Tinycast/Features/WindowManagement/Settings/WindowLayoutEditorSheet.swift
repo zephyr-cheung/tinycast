@@ -1,4 +1,5 @@
 import AppKit
+import Combine
 import SwiftUI
 
 /// Identifies the editor to present; nil is "new", and the UUID keeps two opens distinct.
@@ -44,13 +45,14 @@ struct WindowLayoutEditorSheet: View {
             footer
         }
         .frame(width: Theme.Size.layoutEditorSheet.width)
-        .task {
-            // A display can be unplugged mid-edit; the canvas must not draw geometry that is gone.
-            for await _ in NotificationCenter.default.notifications(
-                named: NSApplication.didChangeScreenParametersNotification)
-            {
-                screens = Self.connectedScreens()
-            }
+        // A display can be unplugged mid-edit; the canvas must not draw geometry that is gone.
+        // Sonoma port: `NotificationCenter.notifications(named:)`'s async sequence is not
+        // sendable-safe in the macOS 15 SDK, so the same notification arrives through Combine.
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: NSApplication.didChangeScreenParametersNotification)
+        ) { _ in
+            screens = Self.connectedScreens()
         }
     }
 

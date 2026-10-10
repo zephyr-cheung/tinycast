@@ -15,9 +15,9 @@ enum FileSearchQuery {
     ) -> String? {
         let terms = terms(in: query)
         guard !terms.isEmpty else { return nil }
-        let matches = terms.map { "kMDItemFSName == \"*\(escape($0))*\"cd" }
+        let matches = terms.map({ "kMDItemFSName == \"*\(escape($0))*\"cd" })
         // Excluding in the predicate keeps ignored files from consuming the candidate cap.
-        let excludes = exclusions.map { "kMDItemFSName != \"\(escapeGlob($0))\"cd" }
+        let excludes = exclusions.map({ "kMDItemFSName != \"\(escapeGlob($0))\"cd" })
         let types = filter.spotlightClause.map { [$0] } ?? []
         return (matches + types + excludes).joined(separator: " && ")
     }

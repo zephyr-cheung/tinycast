@@ -104,7 +104,7 @@ enum ExtensionIconCache {
         guard let comma = text.firstIndex(of: ",") else { return nil }
         let payload = String(text[text.index(after: comma)...].prefix { $0 != "?" })
         guard text[..<comma].hasSuffix(";base64") else {
-            return payload.removingPercentEncoding.map { Data($0.utf8) }
+            return payload.removingPercentEncoding.map({ Data($0.utf8) })
         }
         return Data(base64Encoded: payload, options: .ignoreUnknownCharacters)
     }

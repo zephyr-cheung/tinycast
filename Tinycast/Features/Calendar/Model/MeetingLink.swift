@@ -16,7 +16,7 @@ struct MeetingLink: Hashable, Sendable {
     /// Fields in precedence order; a named provider anywhere beats a bare link found earlier.
     static func detect(fields: [String?], account: String? = nil) -> MeetingLink? {
         var fallback: MeetingLink?
-        for field in fields.compactMap({ $0 }) {
+        for field in fields.compactMap { $0 } {
             for url in webURLs(in: field) {
                 guard let provider = classify(url) else { continue }
                 let link = MeetingLink(provider: provider, url: url, account: account)
@@ -191,7 +191,7 @@ extension MeetingLink {
         private func teamsAppURL(for url: URL) -> URL? {
             guard url.host()?.lowercased().hasSuffix("teams.microsoft.com") == true else { return nil }
             let query = URLComponents(url: url, resolvingAgainstBaseURL: false)?.query
-            return URL(string: "msteams:" + url.path() + (query.map { "?" + $0 } ?? ""))
+            return URL(string: "msteams:" + url.path() + (query.map({ "?" + $0 }) ?? ""))
         }
     }
 }

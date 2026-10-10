@@ -88,9 +88,19 @@ enum AppLauncher {
     private static func quitAwaitingExit(_ apps: [NSRunningApplication]) async -> Bool {
         let center = NSWorkspace.shared.notificationCenter
         let (exits, continuation) = AsyncStream.makeStream(of: pid_t.self)
+        // Sonoma port: `addObserver(of:for:)` and `NSWorkspace.DidTerminateApplicationMessage` are
+        // the 26 SDK's typed-notification spelling; the classic name/userInfo pair reports the same
+        // event on 14.
         let observer = center.addObserver(
-            of: NSWorkspace.shared, for: NSWorkspace.DidTerminateApplicationMessage.self
-        ) { continuation.yield($0.application.processIdentifier) }
+            forName: NSWorkspace.didTerminateApplicationNotification,
+            object: NSWorkspace.shared, queue: .main
+        ) { notification in
+            guard
+                let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
+                    as? NSRunningApplication
+            else { return }
+            continuation.yield(app.processIdentifier)
+        }
         defer { center.removeObserver(observer) }
 
         var pending = Set(apps.map(\.processIdentifier))

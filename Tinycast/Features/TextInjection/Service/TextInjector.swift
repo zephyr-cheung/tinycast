@@ -1,6 +1,7 @@
 import AppKit
 import Carbon.HIToolbox
 
+
 /// Its own shape, not a caller's result type, so the injector stays owned by no one feature.
 struct InjectedText: Equatable, Sendable {
     let text: String
@@ -739,7 +740,7 @@ final class TextInjector {
         guard
             AXUIElementCopyAttributeValue(
                 element,
-                kAXSelectedTextMarkerRangeAttribute as CFString,
+                axSelectedTextMarkerRangeAttribute as CFString,
                 &value) == .success,
             let value
         else { return false }

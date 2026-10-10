@@ -487,7 +487,7 @@ enum SnippetTemplateEngine {
         guard !name.isEmpty else { return nil }
         let options = (token.parameters["options"] ?? "")
             .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespaces) }
+            .map({ $0.trimmingCharacters(in: .whitespaces) })
             .filter { !$0.isEmpty }
         if token.parameters["options"] != nil, options.isEmpty { return nil }
         return ArgumentToken(
@@ -505,7 +505,7 @@ enum SnippetTemplateEngine {
         let formatter = DateFormatter()
         formatter.calendar = context.calendar
         formatter.timeZone = context.timeZone
-        formatter.locale = token.localeIdentifier.map(Locale.init(identifier:)) ?? context.locale
+        formatter.locale = token.localeIdentifier.map { Locale(identifier: $0) } ?? context.locale
         if let format = token.format {
             formatter.dateFormat = format
             return formatter.string(from: date)

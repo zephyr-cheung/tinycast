@@ -44,7 +44,7 @@ final class MCPCoordinator {
 
     func server(slug: String) -> MCPServer? {
         guard isActive else { return nil }
-        return store.enabledServers.first { $0.slug == slug }
+        return store.enabledServers.first(where: { $0.slug == slug })
     }
 
     /// What this turn may reach: everything enabled, or one server when `@slug` named it.

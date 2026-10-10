@@ -39,8 +39,11 @@ final class CommandEscapeTap {
         self.onChord = onChord
     }
 
-    isolated deinit {
-        tearDown()
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            tearDown()
+        }
     }
 
     /// True only for a bare ⌘⎋: any further modifier spells somebody else's chord.

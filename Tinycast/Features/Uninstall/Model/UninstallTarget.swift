@@ -63,7 +63,7 @@ struct UninstallIdentity: Hashable, Sendable {
         }
         if target.bundleURL.standardizedFileURL == ownBundleURL.standardizedFileURL { return nil }
 
-        let bundleID = target.bundleID.map(folded).flatMap { $0.isEmpty ? nil : $0 }
+        let bundleID = target.bundleID.map(folded).flatMap({ $0.isEmpty ? nil : $0 })
         let names = safeNames(
             displayName: target.displayName, bundleName: target.bundleName,
             otherAppNames: otherAppNames)

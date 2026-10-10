@@ -27,7 +27,7 @@ final class NotesStore {
         guard NoteTitle.isUnnamed(title) else { return title }
         return NoteTitle.firstLine(of: source) ?? title
     }
-    var activeFileURL: URL? { activeID.map(repository.fileURL(for:)) }
+    var activeFileURL: URL? { activeID.map({ repository.fileURL(for: $0) }) }
     let notesDirectory: URL
     var onIssue: ((Issue) -> Void)?
 
@@ -52,10 +52,13 @@ final class NotesStore {
         notesDirectory = repository.notesDirectory
     }
 
-    isolated deinit {
-        saveDebounce?.cancel()
-        searchTask?.cancel()
-        searchWorker?.cancel()
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            saveDebounce?.cancel()
+            searchTask?.cancel()
+            searchWorker?.cancel()
+        }
     }
 
     /// Re-lists on every show — ⌘O makes the folder the user's — but never re-reads the live draft.

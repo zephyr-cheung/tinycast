@@ -89,7 +89,7 @@ struct LauncherList: View {
         if let card { cardRows = [.header(card.sectionTitle), .card(card)] }
         guard showSections else {
             guard !results.isEmpty else { return cardRows + fallbackRows }
-            return cardRows + [.header("Results")] + results.map { .app($0, slot: nil) }
+            return cardRows + [.header("Results")] + results.map({ .app($0, slot: nil) })
                 + fallbackRows
         }
         var rows: [Row] = cardRows
@@ -113,7 +113,7 @@ struct LauncherList: View {
         for kind in kinds {
             guard let group = grouped[kind], !group.isEmpty else { continue }
             rows.append(.header(kind.descriptor.sectionTitle))
-            rows.append(contentsOf: group.map { .app($0, slot: nil) })
+            rows.append(contentsOf: group.map({ .app($0, slot: nil) }))
         }
         // A missing kind would make every later row activate its neighbour: assert instead.
         assert(

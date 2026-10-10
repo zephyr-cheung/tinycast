@@ -1,5 +1,4 @@
 import SwiftUI
-@preconcurrency import Translation
 
 struct QuickActionResultView: View {
 
@@ -16,7 +15,6 @@ struct QuickActionResultView: View {
     @State private var contentHeight: CGFloat = 0
     @State private var headerHeight: CGFloat = 0
     @State private var footerHeight: CGFloat = 0
-    @State private var download: TranslationSession.Configuration?
 
     /// Explicit overlays, not `safeAreaBar`: that lays its bars over the content instead of inset.
     var body: some View {
@@ -46,13 +44,8 @@ struct QuickActionResultView: View {
         .panelEntrance()
         // Reported, not measured: the frame above is ours, so reading it back would feed itself.
         .onChange(of: panelHeight, initial: true) { onHeight(panelHeight) }
-        .translationTask(download) { session in
-            try? await session.prepareTranslation()
-            await MainActor.run {
-                download = nil
-                onDownloaded()
-            }
-        }
+        // Sonoma port: `.translationTask` and the language-pack download it drives are macOS 15+.
+        // On 14 `TextTranslator.translate` reports "needs macOS 15" before a pack is ever wanted.
     }
 
     private func measured(_ bar: some View, action: @escaping (CGFloat) -> Void) -> some View {
@@ -174,14 +167,12 @@ struct QuickActionResultView: View {
     }
 
     private var downloadPrompt: some View {
+        // Sonoma port: the download flow above 15 needs `TranslationSession`; on 14 the only honest
+        // thing this prompt can say is why it cannot offer one.
         VStack(alignment: .leading, spacing: metrics.spacing.xl) {
-            Text("\(TextTranslator.displayName(of: state.targetLanguage)) hasn't been downloaded yet.")
+            Text("Translating needs macOS 15 or newer.")
                 .font(metrics.typography.rowTitle)
                 .foregroundStyle(Theme.Colors.textSecondary)
-            Button("Download") {
-                download = TranslationSession.Configuration(
-                    source: nil, target: state.targetLanguage)
-            }
         }
     }
 

@@ -37,7 +37,7 @@ struct FileSearchIgnoreList: Sendable, Equatable {
             if literalNames.contains(name.lowercased()) { return true }
             if nameGlobs.contains(where: { $0.matches(name) }) { return true }
         }
-        return pathGlobs.contains { $0.matches(path) }
+        return pathGlobs.contains(where: { $0.matches(path) })
     }
 
     /// Name globs Spotlight can evaluate itself, so ignored files never fill the candidate cap.

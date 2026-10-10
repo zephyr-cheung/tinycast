@@ -329,7 +329,7 @@ enum ShellCommandRunner {
             }
             guard descriptor >= 0 else { return nil }
             let path = String(
-                decoding: bytes.prefix { $0 != 0 }.map { UInt8(bitPattern: $0) }, as: UTF8.self)
+                decoding: bytes.prefix { $0 != 0 }.map({ UInt8(bitPattern: $0) }), as: UTF8.self)
             return StreamCapture(
                 url: URL(fileURLWithPath: path),
                 handle: FileHandle(fileDescriptor: descriptor, closeOnDealloc: true))

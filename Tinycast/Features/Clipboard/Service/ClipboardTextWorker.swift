@@ -1,7 +1,7 @@
 import Foundation
 
 /// Runs one `ClipboardTextHelper` per item, so Vision's allocations leave with the child process.
-nonisolated enum ClipboardTextWorker {
+enum ClipboardTextWorker {
     enum Failure: Error { case recognition, outputLimit }
 
     /// Mirrors `ClipboardTextExtractor.maximumTextBytes`: the helper is not in the app's module.

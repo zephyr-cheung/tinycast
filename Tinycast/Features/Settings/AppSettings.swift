@@ -573,7 +573,7 @@ final class AppSettings {
             || defaults.bool(forKey: Key.extensionsShowInLauncher.rawValue)
         extensionPackageManager =
             defaults.string(forKey: Key.extensionPackageManager.rawValue)
-            .flatMap(ExtensionPackageManager.init(rawValue:)) ?? .automatic
+            .flatMap { ExtensionPackageManager(rawValue: $0) } ?? .automatic
         extensionRegistries =
             defaults.data(forKey: Key.extensionRegistries.rawValue)
             .flatMap { try? JSONDecoder().decode([ExtensionRegistry].self, from: $0) }
@@ -588,7 +588,7 @@ final class AppSettings {
         calendarLauncherLimit =
             defaults.object(forKey: Key.calendarLauncherLimit.rawValue)
             .flatMap { $0 as? Int }
-            .flatMap(CalendarLauncherLimit.init(rawValue:)) ?? .three
+            .flatMap { CalendarLauncherLimit(rawValue: $0) } ?? .three
         calendarIncludesTomorrow =
             defaults.object(forKey: Key.calendarIncludesTomorrow.rawValue) == nil
             || defaults.bool(forKey: Key.calendarIncludesTomorrow.rawValue)
@@ -612,7 +612,7 @@ final class AppSettings {
         hideCurrentEvent =
             defaults.object(forKey: Key.hideCurrentEvent.rawValue)
             .flatMap { $0 as? Int }
-            .flatMap(HideCurrentEvent.init(rawValue:)) ?? .dontHide
+            .flatMap { HideCurrentEvent(rawValue: $0) } ?? .dontHide
         navigationEnabled = defaults.bool(forKey: Key.navigationEnabled.rawValue)
         menuSearchDisabledApps =
             defaults.stringArray(forKey: Key.menuSearchDisabledApps.rawValue) ?? []

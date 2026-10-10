@@ -190,7 +190,7 @@ struct ExtensionScreen: Equatable {
         var haystack = [item.string("title") ?? ""]
         if let subtitle = item.string("subtitle") { haystack.append(subtitle) }
         haystack.append(contentsOf: item.array("keywords").compactMap(\.stringValue))
-        return haystack.contains { FuzzyMatch.score(needle, candidate: $0) != nil }
+        return haystack.contains(where: { FuzzyMatch.score(needle, candidate: $0) != nil })
     }
 
     /// The `ActionPanel` that applies to the current selection: the item's own, else the screen's.

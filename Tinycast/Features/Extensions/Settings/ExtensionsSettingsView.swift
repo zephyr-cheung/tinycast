@@ -732,7 +732,7 @@ private struct ExtensionPreferenceRow: View {
             SecureField("", text: $text, prompt: schema.placeholder.map(Text.init))
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .pointerStyle(.horizontalText)
+                .horizontalTextPointer()
                 .onChange(of: text) { _, value in save(value) }
         case .file, .directory, .appPicker:
             HStack(spacing: Theme.Spacing.sm) {
@@ -746,7 +746,7 @@ private struct ExtensionPreferenceRow: View {
             TextField("", text: $text, prompt: schema.placeholder.map(Text.init))
                 .textFieldStyle(.roundedBorder)
                 .labelsHidden()
-                .pointerStyle(.horizontalText)
+                .horizontalTextPointer()
                 .onChange(of: text) { _, value in save(value) }
         }
     }

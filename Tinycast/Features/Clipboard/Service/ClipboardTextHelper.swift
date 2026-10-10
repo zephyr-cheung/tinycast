@@ -1,7 +1,7 @@
 import Foundation
 
 @main
-nonisolated enum ClipboardTextHelper {
+enum ClipboardTextHelper {
     static func main() async {
         guard CommandLine.arguments.count == 3,
             ["image", "pdf"].contains(CommandLine.arguments[1])

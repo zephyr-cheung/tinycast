@@ -84,7 +84,7 @@ final class WindowLayoutDraft {
         guard let id = selectedEntryID else { return }
         entries.removeAll { $0.id == id }
         selectedEntryID =
-            selectedDisplayUUID.flatMap { entries(onDisplay: $0).first?.id }
+            selectedDisplayUUID.flatMap({ entries(onDisplay: $0).first?.id })
             ?? entries.first?.id
     }
 

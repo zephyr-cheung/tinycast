@@ -24,7 +24,7 @@ struct EdgeDissolveMask: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onScrollGeometryChange(for: ScrollState.self) { geo in
+            .onLegacyScrollGeometryChange(for: ScrollState.self) { geo in
                 let visible =
                     geo.containerSize.height - geo.contentInsets.top
                     - geo.contentInsets.bottom

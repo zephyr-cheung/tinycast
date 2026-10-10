@@ -42,7 +42,7 @@ struct ThinScrollbar: ViewModifier {
         content
             .scrollIndicators(.hidden)  // drop the native scroller (and its flash) entirely
             // Geometry drives the thumb's size/position, never its visibility.
-            .onScrollGeometryChange(for: Metrics.self) { geo in
+            .onLegacyScrollGeometryChange(for: Metrics.self) { geo in
                 Metrics(
                     offset: geo.contentOffset.y,
                     insetTop: geo.contentInsets.top,
@@ -53,9 +53,11 @@ struct ThinScrollbar: ViewModifier {
                 metrics = new
             }
             // Scrolling reveals the thumb (not the rail) and re-hides a beat after it stops; a thumb drag has no scroll phase, so its own handlers own visibility.
-            .onScrollPhaseChange { _, phase in
+            // Sonoma port: `ScrollPhase` is macOS 15+; the compat observer reports the live-scroll
+            // bit this check was standing in for.
+            .onLegacyScrollPhaseChange { isLive in
                 guard !isDragging else { return }
-                phase == .idle ? scheduleScrollStop() : beganScrolling()
+                isLive ? beganScrolling() : scheduleScrollStop()
             }
             .overlay(alignment: .topTrailing) { bar }
             // One tracking view over the whole trailing strip owns all pointer handling: transparent except over the thumb, where it takes the drag and forwards wheel events, and never flickers the rail the way a content-level hover did.
@@ -421,7 +423,8 @@ private struct ScrollbarInteraction: NSViewRepresentable {
 
         override func updateTrackingAreas() {
             super.updateTrackingAreas()
-            trackingAreas.forEach(removeTrackingArea)
+            // Sonoma port: a method reference loses its isolation under Swift 6.0; call it in a closure.
+        trackingAreas.forEach { removeTrackingArea($0) }
             // `.inVisibleRect` pins the area to the resizing bounds; `.activeAlways` so hover reveals the rail in non-key windows too.
             addTrackingArea(
                 NSTrackingArea(

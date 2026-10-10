@@ -17,7 +17,7 @@ enum RaycastScriptImport {
                 options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants])) ?? []
         return
             contents
-            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            .sorted(by: { $0.lastPathComponent < $1.lastPathComponent })
             .compactMap { url in
                 guard (try? url.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile) == true,
                     let source = head(of: url)

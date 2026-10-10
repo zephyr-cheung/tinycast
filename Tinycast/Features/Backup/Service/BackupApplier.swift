@@ -90,7 +90,7 @@ enum BackupApplier {
         guard !documents.isEmpty else { return 0 }
         // Started first, so imported snippets reach the launcher at once rather than on relaunch.
         if core.settings.snippetsEnabled { await core.snippetsStore.start() }
-        let existing = Set(core.snippetsStore.snippets.map { Pair($0.snippet.name, $0.snippet.text) })
+        let existing = Set(core.snippetsStore.snippets.map({ Pair($0.snippet.name, $0.snippet.text) }))
         let incoming = documents.compactMap { document in
             try? SnippetMarkdownSerializer.parse(
                 content: document.contents,

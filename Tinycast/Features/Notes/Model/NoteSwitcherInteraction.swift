@@ -36,7 +36,7 @@ enum NoteSwitcherSelection {
         fallback: NoteID?
     ) -> NoteID? {
         guard let removedIndex = orderedIDs.firstIndex(of: removed) else { return fallback }
-        let remaining = orderedIDs.filter { $0 != removed }
+        let remaining = orderedIDs.filter({ $0 != removed })
         if remaining.indices.contains(removedIndex) { return remaining[removedIndex] }
         return remaining.last ?? fallback
     }

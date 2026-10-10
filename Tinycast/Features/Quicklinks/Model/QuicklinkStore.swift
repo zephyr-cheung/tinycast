@@ -53,8 +53,11 @@ final class QuicklinkStore {
     }
 
     // Isolated so teardown may touch the main-actor pointers; the release is already on main.
-    isolated deinit {
-        closeDatabase()
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            closeDatabase()
+        }
     }
 
     func load() {
@@ -170,7 +173,7 @@ final class QuicklinkStore {
         sqlite3_clear_bindings(stmt)
         guard status == SQLITE_DONE else { throw .storageUnavailable }
 
-        var updated = quicklinks.filter { $0.id != value.id }
+        var updated = quicklinks.filter({ $0.id != value.id })
         updated.append(value)
         commit(updated.sorted(by: Quicklink.precedes))
     }

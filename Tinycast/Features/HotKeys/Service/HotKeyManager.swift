@@ -188,7 +188,7 @@ final class HotKeyManager {
         if let candidateActionsCache { return candidateActionsCache }
         var actions = HotKeyAction.builtInActions
         actions += boundBundleIDs.map { .app(bundleID: $0) }
-        actions += boundPaneBundleIDs.map { .settingsPane(bundleID: $0) }
+        actions += boundPaneBundleIDs.map({ .settingsPane(bundleID: $0) })
         actions += boundCustomCommandIDs.map { .customCommand(id: $0) }
         actions += boundQuicklinkIDs.map { .quicklink(id: $0) }
         actions += boundQuickActionIDs.map { .quickAction(id: $0) }
@@ -264,7 +264,7 @@ final class HotKeyManager {
     // MARK: - UUID-keyed indexes
 
     private func boundIDs(key: String) -> [UUID] {
-        (UserDefaults.standard.stringArray(forKey: key) ?? []).compactMap(UUID.init(uuidString:))
+        (UserDefaults.standard.stringArray(forKey: key) ?? []).compactMap { UUID(uuidString: $0) }
     }
 
     private func index(_ id: UUID, bound: Bool, key: String) {

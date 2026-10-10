@@ -65,7 +65,7 @@ struct ExtensionPickerField: View {
         let trimmed = query.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return items }
         let needle = FuzzyMatch.Query(trimmed)
-        return items.filter { FuzzyMatch.score(needle, candidate: $0.title) != nil }
+        return items.filter({ FuzzyMatch.score(needle, candidate: $0.title) != nil })
     }
 
     /// Headings the open list draws, which its height and its flip decision both count.
@@ -129,7 +129,7 @@ struct ExtensionPickerField: View {
             )
             .onChange(of: open) { palette.noteControlListOpen(open) }
             .onChange(of: query) { typedAt = Date() }
-            .onScrollVisibilityChange { if !$0 { close() } }
+            .closeWhenScrolledAway { close() }
             .onChange(of: palette.controlListDismissToken) { close() }
             .onDisappear { if open { palette.noteControlListOpen(false) } }
             .onChange(of: focus) { _, focus in

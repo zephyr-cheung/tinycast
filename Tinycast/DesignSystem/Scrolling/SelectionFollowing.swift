@@ -49,7 +49,7 @@ private struct SelectionFollowing: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onScrollGeometryChange(for: Band.self) {
+            .onLegacyScrollGeometryChange(for: Band.self) {
                 Band(insetTop: $0.contentInsets.top, height: $0.containerSize.height)
             } action: { old, new in
                 band = new
@@ -57,9 +57,13 @@ private struct SelectionFollowing: ViewModifier {
                 if scroll.kind == .top, old.insetTop != new.insetTop { proxy.scrollToOrigin() }
                 align()
             }
+            // Sonoma port: this closure is `@Sendable` in the 15.2 SDK's `onPreferenceChange`, so
+            // the main-actor hop the newer SDK infers is written out here.
             .onPreferenceChange(SelectionFrameKey.self) { frame in
-                selection = frame
-                align()
+                MainActor.assumeIsolated {
+                    selection = frame
+                    align()
+                }
             }
             .onChange(of: scroll) { _, scroll in
                 switch scroll.kind {

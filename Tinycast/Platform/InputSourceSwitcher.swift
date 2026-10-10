@@ -24,7 +24,9 @@ final class InputSourceSwitcher {
 
     /// A `selected` source that is gone stays listed, so Settings keeps showing it.
     func options(selecting selected: String?) -> [Option] {
-        var options = Self.enabledKeyboardSources().compactMap(Self.option(for:))
+        // Sonoma port: passing `Self.option(for:)` as a value loses its `@MainActor` isolation
+        // under Swift 6.0's rules; a closure literal keeps it inferred at the call site.
+        var options = Self.enabledKeyboardSources().compactMap { Self.option(for: $0) }
         if let selected, !options.contains(where: { $0.id == selected }) {
             options.append(Option(id: selected, title: selected))
         }

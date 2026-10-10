@@ -64,7 +64,7 @@ enum AccessibilityText {
         guard
             AXUIElementCopyAttributeValue(
                 element,
-                kAXSelectedTextMarkerRangeAttribute as CFString,
+                axSelectedTextMarkerRangeAttribute as CFString,
                 &range) == .success,
             let range,
             CFGetTypeID(range) == AXTextMarkerRangeGetTypeID()
@@ -74,7 +74,7 @@ enum AccessibilityText {
         guard
             AXUIElementCopyParameterizedAttributeValue(
                 element,
-                kAXStringForTextMarkerRangeParameterizedAttribute as CFString,
+                axStringForTextMarkerRangeParameterizedAttribute as CFString,
                 range,
                 &value) == .success
         else { return nil }

@@ -54,7 +54,7 @@ final class QuickActionSettingsStore {
         fallback: AIModelSelection?
     ) {
         guard let model, model.source.installedKind != nil else { return }
-        let sourceModels = available.filter { $0.source == model.source }
+        let sourceModels = available.filter({ $0.source == model.source })
         if sourceModels.contains(where: { $0.model == model.model }) { return }
         if let replacement = sourceModels.first {
             self.model = replacement

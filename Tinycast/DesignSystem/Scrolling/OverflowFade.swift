@@ -10,7 +10,7 @@ struct OverflowFadeMask: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .onScrollGeometryChange(for: CGFloat.self) { geo in
+            .onLegacyScrollGeometryChange(for: CGFloat.self) { geo in
                 geo.contentSize.height + geo.contentInsets.bottom - geo.containerSize.height
                     - geo.contentOffset.y
             } action: { _, new in

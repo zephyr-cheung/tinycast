@@ -28,8 +28,11 @@ final class ClipboardManager {
     }
 
     // Isolated so teardown can touch the main-actor timer; the poll block is already weak.
-    isolated deinit {
-        timer?.invalidate()
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            timer?.invalidate()
+        }
     }
 
     func start() {
@@ -123,7 +126,7 @@ final class ClipboardManager {
         guard FileManager.default.fileExists(atPath: url.path) else { return false }
         var path = url.resolvingSymlinksInPath().path
         if path.hasPrefix("/private/") { path.removeFirst("/private".count) }
-        return !roots.contains { path.hasPrefix($0) }
+        return !roots.contains(where: { path.hasPrefix($0) })
     }
 
     private func poll() {

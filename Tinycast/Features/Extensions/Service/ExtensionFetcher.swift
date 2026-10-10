@@ -23,7 +23,9 @@ final class ExtensionFetcher: Sendable {
         }
     }
 
-    func request(_ spec: RenderValue?) async throws -> [String: Any] {
+    // Sonoma port: Swift 6.2 infers that this freshly built dictionary is safe to hand to the
+    // caller's actor; Xcode 16.2's Swift 6.0 needs the `sending` result spelled out.
+    func request(_ spec: RenderValue?) async throws -> sending [String: Any] {
         let fields = spec?.objectValue ?? [:]
         let urlString = fields["url"]?.stringValue ?? ""
         guard let url = URL(string: urlString), url.scheme != nil else {
@@ -97,7 +99,8 @@ enum ExtensionAsyncProcess {
         return nil
     }
 
-    static func run(_ spec: RenderValue?) async throws -> [String: Any] {
+    /// `sending`: the dictionary belongs to the caller, not to this process helper.
+    static func run(_ spec: RenderValue?) async throws -> sending [String: Any] {
         let fields = spec?.objectValue ?? [:]
         let command = fields["command"]?.stringValue ?? ""
         let useShell = fields["shell"]?.boolValue ?? false

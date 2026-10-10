@@ -73,7 +73,9 @@ struct LauncherScreen: PaletteScreen {
         self.color = color
         self.showSections = pinsFavorites || AppEntry.Kind.named(by: vm.query) != nil
         self.pinsFavorites = pinsFavorites
-        self.favoriteCount = pinsFavorites ? results.prefix(while: favorites.isFavorite).count : 0
+        // Sonoma port: a method reference loses its isolation under Swift 6.0.
+        self.favoriteCount =
+            pinsFavorites ? results.prefix { favorites.isFavorite($0) }.count : 0
         if let calc {
             self.rows = [.calc(calc)] + entries
         } else if let color {
@@ -337,7 +339,8 @@ struct LauncherScreen: PaletteScreen {
 
     /// Highlight a row of the Favorites section, clamped into what the section now holds.
     private func selectFavorite(at index: Int) {
-        let count = reorderedResults().prefix(while: favorites.isFavorite).count
+        // Sonoma port: a method reference loses its isolation under Swift 6.0.
+        let count = reorderedResults().prefix { favorites.isFavorite($0) }.count
         select(row: min(max(index, 0), max(count - 1, 0)))
     }
 

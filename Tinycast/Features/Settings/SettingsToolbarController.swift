@@ -43,7 +43,11 @@ final class SettingsToolbarController: NSObject, WindowChrome, NSToolbarDelegate
         toolbar.displayMode = .iconOnly
         toolbar.allowsUserCustomization = false
         // Both, or a right-click still offers the display-mode items.
-        toolbar.allowsDisplayModeCustomization = false
+        // Sonoma port: suppressing the display-mode items is macOS 15+; 14 keeps `displayMode`
+        // above, which is what the bar shows regardless.
+        if #available(macOS 15.0, *) {
+            toolbar.allowsDisplayModeCustomization = false
+        }
         window.toolbar = toolbar
 
         observe()

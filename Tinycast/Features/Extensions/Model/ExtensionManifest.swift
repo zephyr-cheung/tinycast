@@ -179,8 +179,8 @@ struct ExtensionCommand: Sendable, Hashable, Identifiable {
         keywords = dict["keywords"] as? [String] ?? []
         icon = dict["icon"] as? String
         disabledByDefault = dict["disabledByDefault"] as? Bool ?? false
-        preferences = (dict["preferences"] as? [Any] ?? []).compactMap(ExtensionPreferenceSchema.init(json:))
-        arguments = (dict["arguments"] as? [Any] ?? []).compactMap(ExtensionCommandArgument.init(json:))
+        preferences = (dict["preferences"] as? [Any] ?? []).compactMap { ExtensionPreferenceSchema(json: $0) }
+        arguments = (dict["arguments"] as? [Any] ?? []).compactMap { ExtensionCommandArgument(json: $0) }
     }
 }
 
@@ -229,7 +229,7 @@ struct ExtensionManifest: Sendable, Hashable {
 
     init?(json: [String: Any]) {
         guard let name = json["name"] as? String else { return nil }
-        let commands = (json["commands"] as? [Any] ?? []).compactMap(ExtensionCommand.init(json:))
+        let commands = (json["commands"] as? [Any] ?? []).compactMap { ExtensionCommand(json: $0) }
         guard !commands.isEmpty else { return nil }
         self.name = name
         title = json["title"] as? String ?? name
@@ -239,6 +239,6 @@ struct ExtensionManifest: Sendable, Hashable {
         categories = json["categories"] as? [String] ?? []
         platforms = json["platforms"] as? [String]
         self.commands = commands
-        preferences = (json["preferences"] as? [Any] ?? []).compactMap(ExtensionPreferenceSchema.init(json:))
+        preferences = (json["preferences"] as? [Any] ?? []).compactMap { ExtensionPreferenceSchema(json: $0) }
     }
 }

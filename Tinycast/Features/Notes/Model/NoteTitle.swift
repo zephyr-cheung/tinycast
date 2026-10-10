@@ -17,7 +17,7 @@ enum NoteTitle {
         guard !suffix.isEmpty else { return true }
         let digits = suffix.dropFirst()
         return suffix.hasPrefix(" ") && !digits.isEmpty
-            && digits.allSatisfy { $0.isASCII && $0.isNumber }
+            && digits.allSatisfy({ $0.isASCII && $0.isNumber })
     }
 
     /// The first line carrying visible text, without its heading markers and capped to one row.

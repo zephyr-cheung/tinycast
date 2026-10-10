@@ -417,7 +417,7 @@ private struct ExtensionFilePicker: View {
 
     private var label: String {
         guard !paths.isEmpty else { return "Choose…" }
-        return paths.map { ($0 as NSString).lastPathComponent }.joined(separator: ", ")
+        return paths.map({ ($0 as NSString).lastPathComponent }).joined(separator: ", ")
     }
 
     var body: some View {

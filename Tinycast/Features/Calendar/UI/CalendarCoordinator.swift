@@ -115,7 +115,9 @@ final class CalendarCoordinator {
             return
         }
         store.onChange = { [weak self] in self?.publishEntries() }
-        clock.onTick = { [weak self] in self?.minuteDidPass() }
+        // Sonoma port: the property is `@MainActor @Sendable`; Swift 6.2 infers that for the
+        // literal, Xcode 16.2's Swift 6.0 wants it written out.
+        clock.onTick = { @MainActor @Sendable [weak self] in self?.minuteDidPass() }
         applySpan()
         store.start()
         publishEntries()
@@ -177,7 +179,7 @@ final class CalendarCoordinator {
         }
         let meetings =
             settings.calendarLauncherLimit.maximum.map { Array(agenda.prefix($0)) } ?? agenda
-        appIndex.setMeetings(meetings.map(Self.entry(for:)))
+        appIndex.setMeetings(meetings.map { Self.entry(for: $0) })
     }
 
     private static func entry(for meeting: MeetingEvent) -> AppEntry {

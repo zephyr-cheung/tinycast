@@ -266,9 +266,12 @@ final class ClipboardStore {
     }
 
     // Isolated so teardown may touch the main-actor pointers; the release is already on main.
-    isolated deinit {
-        textSearchTask?.cancel()
-        closeDatabase()
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax; hop back onto the main actor.
+    deinit {
+        MainActor.assumeIsolated {
+            textSearchTask?.cancel()
+            closeDatabase()
+        }
     }
 
     func load() {
@@ -662,7 +665,7 @@ final class ClipboardStore {
         if let orderedCache { return orderedCache }
         let pinned = pinnedItems
         // An unpinned history renders `items` as-is, so it never pays for the split.
-        let result = pinned.isEmpty ? items : pinned + items.filter { !$0.isPinned }
+        let result = pinned.isEmpty ? items : pinned + items.filter({ !$0.isPinned })
         orderedCache = result
         return result
     }
@@ -803,7 +806,7 @@ final class ClipboardStore {
             }
         }
         // Against the oldest unpinned row: an exempt pin would make this permanently true.
-        if items.last(where: { !$0.isPinned }).map({ $0.createdAt < cutoff }) == true {
+        if items.last(where: { !$0.isPinned }).map { $0.createdAt < cutoff } == true {
             items.removeAll { $0.createdAt < cutoff && !$0.isPinned }
         }
     }

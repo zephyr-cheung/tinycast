@@ -42,7 +42,7 @@ struct ExtensionGridLayout: Equatable, Sendable {
             columns: ExtensionGridLayout.columns(root),
             aspectRatio: ExtensionGridLayout.ratio(root.string("aspectRatio")) ?? 1,
             fills: root.string("fit") == "fill",
-            inset: root.string("inset").flatMap(Inset.init(rawValue:)) ?? .zero)
+            inset: root.string("inset").flatMap { Inset(rawValue: $0) } ?? .zero)
     }
 
     /// Tile width for the space the grid is given, so one measure feeds every cell.
@@ -51,7 +51,7 @@ struct ExtensionGridLayout: Equatable, Sendable {
     }
 
     private static func columns(_ root: RenderNode) -> Int {
-        if let columns = root.double("columns").map({ Int($0) }), columns > 0 { return columns }
+        if let columns = root.double("columns").map { Int($0) }, columns > 0 { return columns }
         // Raycast's default is 5; `itemSize` is the legacy way of saying the same thing.
         switch root.string("itemSize") {
         case "small": return 8

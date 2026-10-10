@@ -14,7 +14,7 @@ struct SettingsSearchField: View {
                 .textFieldStyle(.plain)
                 .labelsHidden()
                 .focused($focused)
-                .pointerStyle(.horizontalText)
+                .horizontalTextPointer()
             if !query.isEmpty {
                 Button {
                     query = ""

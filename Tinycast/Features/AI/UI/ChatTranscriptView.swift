@@ -48,8 +48,8 @@ struct ChatTranscriptView: View {
             .edgeDissolve()
             .thinScrollbar()
             // Reopened chats start at the latest message; other anchor roles fight the reader.
-            .defaultScrollAnchor(.bottom, for: .initialOffset)
-            .onScrollGeometryChange(for: ScrollMark.self) { geometry in
+            .initialScrollAnchorAtBottom()
+            .onLegacyScrollGeometryChange(for: ScrollMark.self) { geometry in
                 ScrollMark(
                     offset: geometry.contentOffset.y,
                     // The offset rests at `-insetTop`, so the end is that far past offset plus band

@@ -29,7 +29,7 @@ enum WindowSwitchSweep {
             let pid = app.processIdentifier
             let application = AXWindowAccess.application(for: pid, timeout: sweepTimeout)
             let iconURL = app.bundleURL
-            let iconStamp = iconURL.map(FileIconStamp.value(for:)) ?? 0
+            let iconStamp = iconURL.map { FileIconStamp.value(for: $0) } ?? 0
             for window in AXWindowAccess.windows(in: application) {
                 AXUIElementSetMessagingTimeout(window, sweepTimeout)
                 guard isSwitchable(window) else { continue }

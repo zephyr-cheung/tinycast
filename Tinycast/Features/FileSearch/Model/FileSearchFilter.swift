@@ -75,6 +75,6 @@ enum FileSearchFilter: CaseIterable, Sendable {
         guard self != .all else { return true }
         // An unresolved type is only ever a plain directory: everything else carries one.
         guard let contentType else { return self == .folders && isDirectory }
-        return contentTypes.contains { contentType.conforms(to: $0) }
+        return contentTypes.contains(where: { contentType.conforms(to: $0) })
     }
 }

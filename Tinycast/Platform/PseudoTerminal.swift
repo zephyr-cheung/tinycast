@@ -29,7 +29,9 @@ final class PseudoTerminal: @unchecked Sendable {
 
         var actions: posix_spawn_file_actions_t?
         posix_spawn_file_actions_init(&actions)
-        posix_spawn_file_actions_addchdir(&actions, workingDirectory)
+        // Sonoma port: the plain POSIX spelling only exists in newer SDKs; Darwin has shipped
+        // the same behaviour as `_np` since 10.15.
+        posix_spawn_file_actions_addchdir_np(&actions, workingDirectory)
         for descriptor in Int32(0)...Int32(2) {
             posix_spawn_file_actions_adddup2(&actions, childEnd, descriptor)
         }

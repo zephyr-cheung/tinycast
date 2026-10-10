@@ -11,7 +11,7 @@ struct BackupCategorySelection: View {
 
     private var offered: [BackupCategory] {
         guard let available else { return BackupCategory.allCases }
-        return BackupCategory.allCases.filter { available[$0] != nil }
+        return BackupCategory.allCases.filter({ available[$0] != nil })
     }
 
     private func included(_ category: BackupCategory) -> Binding<Bool> {

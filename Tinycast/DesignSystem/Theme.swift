@@ -374,9 +374,20 @@ enum Theme {
 }
 
 extension View {
-    /// A floating glass control surface, frosted so it reads brighter than clear glass.
+    /// A floating control surface, frosted so it reads brighter than clear glass.
+    ///
+    /// Sonoma port: macOS 26's Liquid Glass (`View.glassEffect(_:in:)`) does not exist in the
+    /// macOS 15 SDK we build against here, so the same layer is drawn with plain vibrancy
+    /// (`NSVisualEffectView`, see `VisualEffectView`) plus the frosted tint that used to ride
+    /// along with the glass. Upstream's own Sequoia line takes the same direction.
+    /// The one thing this cannot reproduce is the glass' built-in elevation — surfaces that
+    /// previously leaned on it for depth now read flatter.
     func frosted(in shape: some Shape) -> some View {
-        glassEffect(.regular.interactive().tint(Theme.Colors.glassFrost), in: shape)
-            .tint(.clear)
+        background {
+            VisualEffectView(material: .hudWindow, blending: .behindWindow)
+                .overlay(Theme.Colors.glassFrost)
+                .clipShape(shape)
+                .allowsHitTesting(false)
+        }
     }
 }

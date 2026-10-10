@@ -52,8 +52,13 @@ final class DoubleTapMonitor: HealthCheckable {
     @ObservationIgnored weak var healthTicker: HealthTicker?
 
     // The tap holds an unretained `self`, so it must not outlive it.
-    isolated deinit {
-        tearDownTap()
+    // Sonoma port: `isolated deinit` is Swift 6.2 syntax and Xcode 16.2's Swift 6.0 cannot parse
+    // it. These objects are owned by main-actor code, so the deinit hops onto the main actor to
+    // run exactly the teardown it used to run inline.
+    deinit {
+        MainActor.assumeIsolated {
+            tearDownTap()
+        }
     }
 
     func start() {

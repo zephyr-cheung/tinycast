@@ -111,7 +111,7 @@ enum FileSearchService {
         reading read: (MDQuery, CFIndex) -> Value
     ) throws -> Value {
         // The sort attribute has to be named at creation; set afterwards, `MDQuery` ignores it.
-        guard let query = MDQueryCreate(nil, expression as CFString, nil, stamp.map { [$0] as CFArray })
+        guard let query = MDQueryCreate(nil, expression as CFString, nil, stamp.map({ [$0] as CFArray }))
         else { throw Failure.couldNotCreateQuery }
         MDQuerySetSearchScope(query, scopes as CFArray, 0)
         MDQuerySetMaxCount(query, FileSearchQuery.candidateLimit)

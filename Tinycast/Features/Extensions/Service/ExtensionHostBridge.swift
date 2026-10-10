@@ -221,7 +221,7 @@ final class ExtensionHostBridge: ExtensionHostAPI {
 
         case "set":
             guard let key = arguments.first?.stringValue,
-                let value = arguments[safe: 1].flatMap(ExtensionStorage.StoredValue.init(renderValue:))
+                let value = arguments[safe: 1].flatMap({ ExtensionStorage.StoredValue(renderValue: $0) })
             else { return nil }
             context.storage.setLocalStorage(extension: name, key: key, value: value)
             return nil
@@ -436,7 +436,7 @@ final class ExtensionHostBridge: ExtensionHostAPI {
         } else {
             urls = context?.applicationURLs ?? []
         }
-        return urls.map(describe(application:))
+        return urls.map { describe(application: $0) }
     }
 
     private func describe(application url: URL) -> [String: Any] {

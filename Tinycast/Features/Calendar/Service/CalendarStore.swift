@@ -135,7 +135,7 @@ final class CalendarStore {
             }
             .sorted { $0.title.localizedCaseInsensitiveCompare($1.title) == .orderedAscending }
 
-        let selected = sources.filter { !hiddenCalendarIDs.contains($0.calendarIdentifier) }
+        let selected = sources.filter({ !hiddenCalendarIDs.contains($0.calendarIdentifier) })
         guard !selected.isEmpty,
             let interval = span.interval(from: Date(), calendar: .current)
         else {
@@ -145,7 +145,7 @@ final class CalendarStore {
         // The predicate expands recurrence itself; rolling our own never works.
         let predicate = store.predicateForEvents(
             withStart: interval.start, end: interval.end, calendars: selected)
-        publish(store.events(matching: predicate).compactMap(Self.meeting(from:)))
+        publish(store.events(matching: predicate).compactMap { Self.meeting(from: $0) })
     }
 
     private func publish(_ next: [MeetingEvent]) {
@@ -159,7 +159,7 @@ final class CalendarStore {
         guard event.status != .canceled, let start = event.startDate, let end = event.endDate,
             let calendar = event.calendar
         else { return nil }
-        let me = event.attendees?.first { $0.isCurrentUser }
+        let me = event.attendees?.first(where: { $0.isCurrentUser })
         return MeetingEvent(
             id: (event.eventIdentifier ?? event.calendarItemIdentifier)
                 + "|\(start.timeIntervalSinceReferenceDate)",

@@ -286,11 +286,10 @@ private struct PaletteTransparencyRow: View {
             anchor: .generalAppearance
         ) {
             Slider(
-                value: value, in: -100...100, step: 50, neutralValue: 0,
+                value: value, in: -100...100, step: 50,
                 label: { EmptyView() },
                 minimumValueLabel: { Text("Less") },
                 maximumValueLabel: { Text("More") },
-                tick: { SliderTick($0) },
                 onEditingChanged: { editing in
                     isEditing = editing
                     if !editing, let draft {

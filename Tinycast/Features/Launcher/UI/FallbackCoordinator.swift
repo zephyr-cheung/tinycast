@@ -22,7 +22,9 @@ final class FallbackCoordinator {
     /// The launcher's rows. An empty query is nobody's input, so it earns no section at all.
     func entries(for query: String) -> [(fallback: Fallback, entry: AppEntry)] {
         guard !query.trimmingCharacters(in: .whitespaces).isEmpty else { return [] }
-        return available.filter(store.isEnabled).compactMap { fallback in
+        // Sonoma port: passing `store.isEnabled` as a value drops its `@MainActor` isolation under
+        // Swift 6.0's rules; a closure literal keeps it inferred at the call site.
+        return available.filter({ store.isEnabled($0) }).compactMap { fallback in
             entry(for: fallback).map { (fallback, $0) }
         }
     }
@@ -53,7 +55,8 @@ final class FallbackCoordinator {
 
     /// A fallback whose feature is switched off is offered nowhere, Settings included.
     private var candidates: [Fallback] {
-        var result = Fallback.Builtin.allCases.filter(isAvailable).map(Fallback.builtin)
+        // Same as above: `isAvailable` must stay a call inside a closure, not a function value.
+        var result = Fallback.Builtin.allCases.filter { isAvailable($0) }.map(Fallback.builtin)
         guard settings.quicklinksEnabled else { return result }
         result += quicklinks.quicklinks
             .filter { $0.isEnabled && QuicklinkDestination.containsPlaceholder($0.link) }
