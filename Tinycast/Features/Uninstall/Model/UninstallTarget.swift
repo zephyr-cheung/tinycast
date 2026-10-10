@@ -72,7 +72,7 @@ struct UninstallIdentity: Hashable, Sendable {
         return UninstallIdentity(
             bundleID: bundleID,
             allowsBundleIDPrefixMatch: (bundleID?.split(separator: ".").count ?? 0) >= 3,
-            otherBundleIDs: Set(otherBundleIDs.map(folded)).subtracting([bundleID].compactMap { $0 }),
+            otherBundleIDs: Set(otherBundleIDs.map(folded)).subtracting([bundleID].compactMap({ $0 })),
             names: names,
             bundleURL: target.bundleURL.standardizedFileURL)
     }

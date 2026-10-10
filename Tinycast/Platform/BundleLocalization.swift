@@ -8,7 +8,7 @@ enum BundleLocalization {
         var seen = Set<String>()
         for tag in preferred + ["en"] {
             let bare = tag.split(separator: "-").first.map(String.init) ?? tag
-            for form in [tag, regionForm(tag), bare].compactMap { $0 } {
+            for form in [tag, regionForm(tag), bare].compactMap({ $0 }) {
                 // loctable keys and .lproj folders use underscores where a language tag uses "-".
                 let underscored = form.replacingOccurrences(of: "-", with: "_")
                 for code in [form, underscored]

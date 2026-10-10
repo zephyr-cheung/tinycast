@@ -51,7 +51,7 @@ struct ExtensionGridLayout: Equatable, Sendable {
     }
 
     private static func columns(_ root: RenderNode) -> Int {
-        if let columns = root.double("columns").map { Int($0) }, columns > 0 { return columns }
+        if let columns = root.double("columns").map({ Int($0) }), columns > 0 { return columns }
         // Raycast's default is 5; `itemSize` is the legacy way of saying the same thing.
         switch root.string("itemSize") {
         case "small": return 8

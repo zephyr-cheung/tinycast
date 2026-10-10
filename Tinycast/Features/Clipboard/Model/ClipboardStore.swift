@@ -806,7 +806,7 @@ final class ClipboardStore {
             }
         }
         // Against the oldest unpinned row: an exempt pin would make this permanently true.
-        if items.last(where: { !$0.isPinned }).map { $0.createdAt < cutoff } == true {
+        if items.last(where: { !$0.isPinned }).map({ $0.createdAt < cutoff }) == true {
             items.removeAll { $0.createdAt < cutoff && !$0.isPinned }
         }
     }
